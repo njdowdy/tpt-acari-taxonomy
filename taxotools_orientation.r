@@ -17,7 +17,7 @@ df_canon <- cast_canonical(df,
 df_melted <- melt_canonical(df_canon,
                             canonical = "canonical",
                             genus = "Genus_2",
-                            species = "Speices_2",
+                            species = "Species_2",
                             subspecies = "Subspecies_2")
 
 # consolidate a list of synonyms
@@ -33,7 +33,8 @@ namelist <- read.csv('input/taxa_7734398.txt', sep='\t') # darwinCore table
 darwin <- DwC2taxo(namelist, statuslist = NA, source = NA)
 
 # helper function to expand abbreviated names
-expand_name("Arctia caja", "A. plantaginis", "A villica", "A.flavia")
+expand_name("Arctia caja", "A. plantaginis") # works
+expand_name("Arctia caja", "A. plantaginis", "A villica", "A.flavia") # out of scope
 
 # resolve names in a list against a taxolist, including fuzzy match
 master <- darwin
@@ -65,7 +66,7 @@ guess_taxo_rank("A b c d") # unknown
 # get a list of synonyms from ITIS (but ITIS sucks)
 itissyn <- get_itis_syn("Utetheisa ornatrix")
 
-# get a list of synonyms from wikipedia.org
+# get a list of synonyms from wikipedia.org; some loss of info from var/form names
 wikisyn <- list_wiki_syn("Utetheisa ornatrix")
 
 # list high taxonomy from 
@@ -79,6 +80,7 @@ synsub_master <- synonymize_subspecies(master, verbose = FALSE)
 
 # wikipedia synonyms to a taxolist
 wikisyntaxo <- wiki2taxo(wikisyn)
+# can produce duplicate canonical names:
 wikisyntaxo %>%
   group_by(canonical) %>%
   summarize("names" = n())
